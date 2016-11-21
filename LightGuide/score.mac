@@ -1,0 +1,30 @@
+#
+# define scoring mesh
+#
+/score/create/boxMesh boxMesh_1
+/score/mesh/boxSize 25.4 25.4 30. mm
+/score/mesh/translate/xyz 0. 0. 25. mm
+/score/mesh/nBin  32 32 32 
+#
+# define scorers and filters
+#
+/score/quantity/energyDeposit eDep
+/score/quantity/nOfStep nOfStepopticalphoton
+/score/filter/particle OPFilter opticalphoton
+#
+/vis/disable
+/control/verbose 2
+/run/verbose 1
+#######/event/verbose 1
+#######/tracking/verbose 1
+/gun/particle gamma
+/gun/energy 1.2 MeV
+/run/beamOn 100
+/vis/enable
+
+#/score/drawProjection boxMesh_1 eDep  
+/score/drawProjection boxMesh_1 nOfStepopticalphoton
+#/score/drawColumn boxMesh_1 nOfStepopticalphoton
+/score/dumpQuantityToFile boxMesh_1 nOfStepopticalphoton nOfStepphoton.txt
+#/score/close
+#
