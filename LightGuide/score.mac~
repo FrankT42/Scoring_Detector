@@ -2,9 +2,9 @@
 # define scoring mesh
 #
 /score/create/boxMesh boxMesh_1
-/score/mesh/boxSize 12.7 12.7 0.1 mm
-/score/mesh/translate/xyz 0. 0. 55. mm
-/score/mesh/nBin  32 32 1
+/score/mesh/boxSize 25.4 25.4 30. mm
+/score/mesh/translate/xyz 0. 0. 25. mm
+/score/mesh/nBin  32 32 32 
 #
 # define scorers and filters
 #

@@ -37,6 +37,7 @@
 #include "G4OpticalSurface.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
+#include "G4Cons.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4ThreeVector.hh"
@@ -351,7 +352,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 // The Light Guide
 //
-  G4Trd* Guide_box = new G4Trd("Guide",25.2*mm,25.4/2*mm,25.2*mm,25.4/2*mm,30*mm);
+  G4Cons* Guide_box = new G4Cons("Guide",0*mm,25.5*mm,0*mm,25.4/2*mm,30*mm,0*deg,360*deg);
 
   G4LogicalVolume* Guide_log
     = new G4LogicalVolume(Guide_box,perspex,"Guide",0,0,0);
@@ -359,6 +360,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VPhysicalVolume* Guide_phys
     = new G4PVPlacement(0,G4ThreeVector(0,0,25),Guide_log,"Guide",
                         expHall_log,false,0);
+//Guide Wrap
+//
+G4Cons* Guide_Wrap = new G4Cons("Guide_Wrap",25.5*mm,25.8*mm,25.4/2*mm,25.8/2*mm,30*mm,0*deg,360*deg);
+
+  G4LogicalVolume* Guide_Wrap_log
+    = new G4LogicalVolume(Guide_Wrap,perspex,"Guide_Wrap",0,0,0);
+
+  G4VPhysicalVolume* Guide_Wrap_phys
+    = new G4PVPlacement(0,G4ThreeVector(0,0,25),Guide_Wrap_log,"Guide_Wrap",
+                        expHall_log,false,0);
+
 
 // The Scintillator
 //
@@ -377,6 +389,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 G4VPhysicalVolume* Scint_Wrap_phys =
       new G4PVPlacement(0,G4ThreeVector(0,0,-40.5*mm),Scint_Wrap_log,"Scint_Wrap",
                         expHall_log,false,0);
+  G4Tubs* Scint_Wrap_2 = new G4Tubs("Scint_Wrap_2",25.5*mm, 25.6*mm,0.1*mm,0*deg,360*deg);
+  G4LogicalVolume* Scint_Wrap_2_log
+    = new G4LogicalVolume(Scint_Wrap_2,wrapping,"Scint_Wrap_2",0,0,0);
+G4VPhysicalVolume* Scint_Wrap_2_phys =
+      new G4PVPlacement(0,G4ThreeVector(0,0,-76.3*mm),Scint_Wrap_2_log,"Scint_Wrap_2",
+                        expHall_log,false,0);
 
 
 // ------------- Surfaces --------------
@@ -390,6 +408,22 @@ G4VPhysicalVolume* Scint_Wrap_phys =
 
   new G4LogicalBorderSurface("WrapSurface",
                                  Scint_Wrap_phys,expHall_phys,opWrapSurface);
+  G4OpticalSurface* opWrapSurface2 = new G4OpticalSurface("WrapSurface2");
+  opWrapSurface2->SetType(dielectric_dielectric);
+  opWrapSurface2->SetFinish(polished);
+  opWrapSurface2->SetModel(unified);
+
+  new G4LogicalBorderSurface("WrapSurface",
+                                 Scint_Wrap_phys,expHall_phys,opWrapSurface);
+//Guide_Wrapping
+//
+  G4OpticalSurface* opGuideWrapSurface = new G4OpticalSurface("GuideWrapSurface");
+  opGuideWrapSurface->SetType(dielectric_dielectric);
+  opGuideWrapSurface->SetFinish(polished);
+  opGuideWrapSurface->SetModel(unified);
+
+  new G4LogicalBorderSurface("GuideWrapSurface",
+                                 Guide_Wrap_phys,expHall_phys,opGuideWrapSurface);
 
 // Light Guide
 //
@@ -463,6 +497,16 @@ G4VPhysicalVolume* Scint_Wrap_phys =
   myST3->DumpTable();
 
   opWrapSurface->SetMaterialPropertiesTable(myST3);
+  opWrapSurface2->SetMaterialPropertiesTable(myST3);
+  G4MaterialPropertiesTable *myST4 = new G4MaterialPropertiesTable();
+
+  myST4->AddProperty("REFLECTIVITY", ephoton, reflectivity2, num);
+  myST4->AddProperty("EFFICIENCY",   ephoton, efficiency,   num);
+
+  G4cout << "Air Surface G4MaterialPropertiesTable" << G4endl;
+  myST4->DumpTable();
+
+  opGuideWrapSurface->SetMaterialPropertiesTable(myST4);
 
 
 
